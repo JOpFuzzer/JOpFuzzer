@@ -1,7 +1,7 @@
 # JOpFuzzer
 This is a supplementary repository for paper submission **Detecting JVM JIT Compiler Bugs via Exploring Two-Dimensional Input Spaces**.
 ## Confirmed Bugs
-Since unconfirmed bugs cannot be shown in [Java Bug System](https://bugs.openjdk.org/secure/Dashboard.jspa)(JBS), we only show the bugs that are confirmed by developers. Also, since the information of the reporter cannot be found in JBS, there are several screenshots of the confirmation email sent by Oracle under the directory [**Confirmed**]().
+Since unconfirmed bugs cannot be shown in [Java Bug System](https://bugs.openjdk.org/secure/Dashboard.jspa)(JBS), we only show the bugs that are confirmed by developers. Also, since the information of the reporter cannot be found in JBS, there are several screenshots of the confirmation email sent by Oracle under the directory [**Confirmed**](https://github.com/JOpFuzzer/JOpFuzzer/tree/main/Confirmed).
 
 Affected Versions| Bug ID | Link
 |-------|------|------|
@@ -16,9 +16,11 @@ Affected Versions| Bug ID | Link
 8 |JDK-8283745| https://bugs.openjdk.org/browse/JDK-8283745 |
 11, 17, 18, 19|JDK-8284881|https://bugs.openjdk.org/browse/JDK-8284881|
 11, 17, 19|JDK-8284879|https://bugs.openjdk.org/browse/JDK-8284879|
+11, 17, 18, 19, 20| JDK-8293410 |https://bugs.openjdk.org/browse/JDK-8293410
 8, 11| JDK-8284882|https://bugs.openjdk.org/browse/JDK-8284882|
  8 |JDK-8284945|https://bugs.openjdk.org/browse/JDK-8284945 |
  8 |JDK-8284946|https://bugs.openjdk.org/browse/JDK-8284946|
+ 11| JDK-8293413 |https://bugs.openjdk.org/browse/JDK-8293413
  8 |JDK-8284952|https://bugs.openjdk.org/browse/JDK-8284952|
  8 |JDK-8284947|https://bugs.openjdk.org/browse/JDK-8284947|
  8 |JDK-8284954|https://bugs.openjdk.org/browse/JDK-8284954|
@@ -32,12 +34,12 @@ Affected Versions| Bug ID | Link
  20 | JDK-8291790 |https://bugs.openjdk.org/browse/JDK-8291790
  11 | JDK-8292863 | https://bugs.openjdk.org/browse/JDK-8292863
  20 | JDK-8292582 | https://bugs.openjdk.org/browse/JDK-8292582
- 17,19,20| JDK-8291809 | https://bugs.openjdk.org/browse/JDK-8291809
+ 17, 19, 20| JDK-8291809 | https://bugs.openjdk.org/browse/JDK-8291809
 
 ## Empirical Study
 We provide the raw data and the results in our whole study.
 Raw data contains two parts: bug reports and bug triggering test cases. We store the bug reports in Google Drive ([JDK_data](https://drive.google.com/file/d/1wVk8cGMrYR88TRoD1pk32oVUWWWf3A8s/view?usp=sharing)),
-and bug triggering test cases in directory [Bug_triggering_input]().
+and bug triggering test cases in directory [Bug_triggering_test_cases](https://github.com/JOpFuzzer/JOpFuzzer/tree/main/Bug_triggering_test_cases).
 
 We use the tool in the directory [Scripts]() to extract the result in the empirical study. 
 Users should download the JDK_data and Compiler_data and run the process.py with a proper option.
