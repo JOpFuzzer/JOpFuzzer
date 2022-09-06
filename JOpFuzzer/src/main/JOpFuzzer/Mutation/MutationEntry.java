@@ -26,13 +26,13 @@ public class MutationEntry {
     String separator = System.getProperty("file.separator");
 
     public MutationEntry(String jdkPath, SeedPool seedPool, String mt) throws IOException, ExecutionException, InterruptedException {
-        int mutationTime = Integer.parseInt(mt);//the mutation time
-        String projectPath = "src/main/JavaFuzzer/tests/"; // source code root path. e.g. /home/kui/Desktop/buggyProject
+        int mutationRound = Integer.parseInt(mt);//the mutation time
+        String projectPath = "./JavaFuzzer/tests/"; // source code root path. e.g. /home/kui/Desktop/buggyProject
         int lineNumber; // line number of target file to be mutated. e.g. 10
         List<File> seeds = new ArrayList<>(seedPool.seedPoolOptionPair.keySet());
         Random rand = new Random();
         int seedIndex;
-        while (mutationTime-- > 0) {
+        while (mutationRound-- > 0) {
 
             seedIndex = rand.nextInt(seeds.size());
             File dir = seeds.get(seedIndex);

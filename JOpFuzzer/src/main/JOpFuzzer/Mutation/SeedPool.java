@@ -20,7 +20,7 @@ public class SeedPool {
     }
 
     private void initialize() throws IOException {
-        File rootDir = new File("src/main/JavaFuzzer/tests/");
+        File rootDir = new File("./JavaFuzzer/tests/");
         for (File dir : Objects.requireNonNull(rootDir.listFiles())) {
             if (dir.isDirectory())
                 seedPoolOptionPair.put(dir, Collections.singletonList(""));
@@ -28,7 +28,7 @@ public class SeedPool {
     }
 
     private void generate() throws IOException {
-        String cmd = "cd src/main/JavaFuzzer; bash generate.sh " + testNumber + "; cd ../../..";
+        String cmd = "cd ./JavaFuzzer; bash generate.sh " + testNumber + "; cd ..";
         int exitValue = execute(cmd);
         if (exitValue != 0) {
             System.err.println("Error: generate seed failed");
