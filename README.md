@@ -19,7 +19,6 @@ Affected Versions| Bug ID | Link
 8, 11| JDK-8284882|https://bugs.openjdk.org/browse/JDK-8284882|
  8 |JDK-8284945|https://bugs.openjdk.org/browse/JDK-8284945 |
  8 |JDK-8284946|https://bugs.openjdk.org/browse/JDK-8284946|
- 11| JDK-8293413 |https://bugs.openjdk.org/browse/JDK-8293413
  8 |JDK-8284952|https://bugs.openjdk.org/browse/JDK-8284952|
  8, 11, 18, 19|JDK-8283740|https://bugs.openjdk.org/browse/JDK-8283740|
  8 |JDK-8284947|https://bugs.openjdk.org/browse/JDK-8284947|
