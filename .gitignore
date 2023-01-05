@@ -15,3 +15,7 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+JOpFuzzer/.idea/compiler.xml
+JOpFuzzer/.idea/jarRepositories.xml
+JOpFuzzer/.idea/misc.xml
+JOpFuzzer/.idea/vcs.xml

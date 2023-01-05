@@ -46,11 +46,19 @@ public enum Option { //return {default, min, max}
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
+    }, ClipInlining {
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
     }, DebugInlinedCalls { //If false, restricts profiled locations to the root method only
 
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
+    }, IncrementalInline {
+        return new int[]{
+            1, 0, 1
+        };
     }, IncrementalInlineForceCleanup { //do cleanup after every iteration of incremental inlining
 
         public int[] getRange() {
@@ -66,13 +74,41 @@ public enum Option { //return {default, min, max}
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
+    }, Inline {
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
     }, InlineAccessors { //inline accessor methods (get/set)
 
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
-    }, InlineMethodsWithExceptionHandlers { //Inline methods containing exception handlers (NOTE: does not work with current backend)
+    },InlineArrayCopy{
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    },InlineClassNatives{
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    },InlineIntrinsics{
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    },InlineMathNatives{
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    } InlineMethodsWithExceptionHandlers { //Inline methods containing exception handlers (NOTE: does not work with current backend)
 
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    },InlineNatives{
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    },InlineNIOCheckIndex{
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
@@ -81,42 +117,54 @@ public enum Option { //return {default, min, max}
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
+    },InlineObjectHash{
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
     }, InlineReflectionGetCallerClass {//inline sun.reflect.Reflection.getCallerClass(), known to be part of base library DLL
 
         public int[] getRange() {
             return new int[]{1, 0, 1};
+        }
+    },InlineSmallCode{
+        public int[] getRange() {
+            return new int[]{1500, 0, Integer.MAX_VALUE};
         }
     }, InlineSynchronizedMethods { // Inline synchronized methods
 
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
-    }, MaxInlineLevel { //maximum number of nested calls that are inlined by high tier compiler
-
+    },InlineThreadNatives{
         public int[] getRange() {
-            return new int[]{15, 0, Integer.MAX_VALUE};
+            return new int[]{1, 0, 1};
         }
-    }, MaxInlineSize { //The maximum bytecode size of a method to be inlined by high tier compiler
-
+    },InlineUnsafeOps{
         public int[] getRange() {
-            return new int[]{35, 0, Integer.MAX_VALUE};
+            return new int[]{1, 0, 1};
         }
-    }, MaxRecursiveInlineLevel { //maximum number of nested recursive calls that are inlined by high tier compiler
-
+    } ,InlineWarmCalls{
         public int[] getRange() {
-            return new int[]{1, 0, Integer.MAX_VALUE};
+            return new int[]{1, 0, 1};
         }
-    }, MaxTrivialSize { //The maximum bytecode size of a trivial method to be inlined by high tier compiler
-
+    },LiveNodeCountInliningCutoff{
         public int[] getRange() {
-            return new int[]{6, 0, Integer.MAX_VALUE};
+            return new int[]{40000, 0, Integer.MAX_VALUE/8};
         }
     }, MultiArrayExpandLimit { //Maximum number of individual allocations in an inline-expanded multianewarray instruction
 
         public int[] getRange() {
             return new int[]{6, 0, Integer.MAX_VALUE};
         }
-    }, NestedInliningSizeRatio { //Percentage of prev. allowed inline size in recursive inlining
+    }, NodeCountInliningCutoff{
+        public int[] getRange() {
+            return new int[]{18000, 0, Integer.MAX_VALUE/8};
+        }
+    },NodeCountInliningStep{
+        public int[] getRange() {
+            return new int[]{18000, 0, Integer.MAX_VALUE/8};
+        }
+    },NestedInliningSizeRatio { //Percentage of prev. allowed inline size in recursive inlining
 
         public int[] getRange() {
             return new int[]{90, 0, 100};
@@ -124,6 +172,14 @@ public enum Option { //return {default, min, max}
     }, EliminateAutoBox {
         public int[] getRange() {
             return new int[]{1, 0, 1};
+        }
+    },AggressiveUnboxing{
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    },AutoBoxCacheMax{
+        public int[] getRange() {
+            return new int[]{128, 0, Integer.MAX_VALUE};
         }
     }, EliminateLocks {
         public int[] getRange() {
@@ -181,12 +237,11 @@ public enum Option { //return {default, min, max}
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
-    }, BlockLayoutRotateLoops { //Allow back branches to be fall throughs in the block layout
-
+    },AlignVector{
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }
-    }, DuplicateBackedge { //Transform loop with a merge point into 2 loops if inner loop is expected to optimize better
+    }, BlockLayoutRotateLoops { //Allow back branches to be fall throughs in the block layout
 
         public int[] getRange() {
             return new int[]{1, 0, 1};
@@ -201,6 +256,10 @@ public enum Option { //return {default, min, max}
         public int[] getRange() {
             return new int[]{43, 5, 43};
         }
+    },LoopPercentProfileLimit{
+        public int[] getRange() {
+            return new int[]{10, 0, 100};
+        }
     }, LoopStripMiningIter { //Number of iterations in strip mined loop
 
         public int[] getRange() {
@@ -211,8 +270,20 @@ public enum Option { //return {default, min, max}
         public int[] getRange() {
             return new int[]{0, 0, Integer.MAX_VALUE};
         }
+    },LoopUnrollLimit{
+        public int[] getRange() {
+            return new int[]{60, 0, Integer.MAX_VALUE};
+        }
     }, LoopUnrollMin { //Minimum number of unroll loop bodies before checking progress of rounds of unroll,optimize,..
 
+        public int[] getRange() {
+            return new int[]{4, 0, Integer.MAX_VALUE};
+        }
+    },MaxLoopPad{
+        public int[] getRange() {
+            return new int[]{15, 0, Integer.MAX_VALUE};
+        }
+    },NumberOfLoopInstrToAlign{
         public int[] getRange() {
             return new int[]{4, 0, Integer.MAX_VALUE};
         }
@@ -227,6 +298,10 @@ public enum Option { //return {default, min, max}
     }, PartialPeelLoop {
         public int[] getRange() {
             return new int[]{1, 0, 1};
+        }
+    },PartialPeelNewPhiDelta{
+        public int[] getRange() {
+            return new int[]{0, 0, Integer.MAX_VALUE};
         }
     }, UseSuperWord {
         public int[] getRange() {
@@ -253,6 +328,14 @@ public enum Option { //return {default, min, max}
             return new int[]{1, 0, 1};
         }
     }, OptimizeUnsafes {
+        public int[] getRange() {
+            return new int[]{1, 0, 1};
+        }
+    },TieredCompilation{
+        public int[] getRange() {
+            return new int[]{0, 0, 1};
+        }
+    },SplitIfBlocks{
         public int[] getRange() {
             return new int[]{1, 0, 1};
         }

@@ -10,118 +10,128 @@ import java.util.List;
 public enum ProfileData {
     PrintInlining {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{0, 24};
+            int[] index = new int[]{0, 38};
             return getValue(index);
         }
 
     }, PrintEliminateAutoBox {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{24, 25};
+            int[] index = new int[]{38, 40};
             return getValue(index);
         }
     }, PrintEliminateLocks {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{25, 27};
+            int[] index = new int[]{40, 42};
             return getValue(index);
         }
     }, PrintEliminateAllocations {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{27, 30};
+            int[] index = new int[]{42, 45};
             return getValue(index);
         }
     }, PrintEscapeAnalysis {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{30, 31};
+            int[] index = new int[]{45, 46};
             return getValue(index);
         }
     }, TraceOptimizeFill {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{31, 32};
+            int[] index = new int[]{46, 47};
             return getValue(index);
         }
     }, PrintBlockElimination {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{32, 33};
+            int[] index = new int[]{47, 48};
             return getValue(index);
         }
     }, PrintCanonicalization {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{33, 34};
+            int[] index = new int[]{48, 49};
             return getValue(index);
         }
     }, PrintCEE {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{34, 35};
+            int[] index = new int[]{49, 50};
             return getValue(index);
         }
     }, PrintNullCheckElimination {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{35, 36};
+            int[] index = new int[]{50, 51};
             return getValue(index);
         }
     }, PrintValueNumbering {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{36, 38};
+            int[] index = new int[]{51, 53};
             return getValue(index);
         }
     }, PrintOptimizeStringConcat {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{38, 39};
+            int[] index = new int[]{53, 54};
             return getValue(index);
         }
     }, TraceLoopOpts {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{39, 46};
+            int[] index = new int[]{54, 65};
             return getValue(index);
         }
     }, TraceLoopPredicate {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{46, 47};
+            int[] index = new int[]{65, 66};
             return getValue(index);
         }
     }, TraceLoopUnswitching {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{47, 48};
+            int[] index = new int[]{66, 67};
             return getValue(index);
         }
     }, TracePartialPeeling {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{48, 49};
+            int[] index = new int[]{67, 69};
             return getValue(index);
         }
     }, TraceSuperWord {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{49, 50};
+            int[] index = new int[]{69, 70};
             return getValue(index);
         }
     }, TraceSuperWordLoopUnrollAnalysis {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{50, 51};
+            int[] index = new int[]{70, 71};
             return getValue(index);
         }
     }, TraceRangeCheckElimination {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{51, 52};
+            int[] index = new int[]{71, 72};
             return getValue(index);
         }
     }, PrintOptoPeephole {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{52, 53};
+            int[] index = new int[]{72, 73};
             return getValue(index);
         }
     }, PrintDominators {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{53, 54};
+            int[] index = new int[]{73, 74};
             return getValue(index);
         }
     }, PrintOptimizePtrCompare {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{54, 55};
+            int[] index = new int[]{74, 75};
             return getValue(index);
         }
     }, PrintUnsafeOptimization {
         public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
-            int[] index = new int[]{55, 56};
+            int[] index = new int[]{75, 76};
+            return getValue(index);
+        }
+    },PrintTieredEvents{
+        public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
+            int[] index = new int[]{76, 77};
+            return getValue(index);
+        }
+    },PrintCFG{
+        public List<Tuple3<String, List<Integer>, Boolean>> getOptionAndValue() {
+            int[] index = new int[]{77, 78};
             return getValue(index);
         }
     };

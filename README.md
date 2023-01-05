@@ -74,3 +74,161 @@ Execute **MainEntry** under src/main where the arguments are set as shown below:
 -mutationRound          the number of mutation round (e.g., 1000)
 ```
 Note that we use spoon for java source code structure analysis, but there is a dependency conflict with the relevant code in **tbar**, and the package name where the conflict occurs is the same. So pre-generate the adapted **tbar** as JavaMutator.jar to avoid conflicts.
+
+## List of profile data and optimization options  
+
+### PrintInlining
+```
+AlwaysIncrementalInline
+ArrayCopyLoadStoreMaxElem
+ArrayOperationPartialInlineSize
+C1InlineStackLimit
+C1MaxInlineLevel
+C1MaxInlineSize
+C1MaxRecursiveInlineLevel
+C1MaxTrivialSize
+C1ProfileInlinedCalls
+ClipInlining
+DebugInlinedCalls
+FreqInlineSize
+IncrementalInline
+IncrementalInlineForceCleanup
+IncrementalInlineMH
+IncrementalInlineVirtual
+Inline
+InlineAccessors
+InlineArrayCopy
+InlineClassNatives
+InlineIntrinsics
+InlineMathNatives
+InlineMethodsWithExceptionHandlers
+InlineNatives
+InlineNIOCheckIndex
+InlineObjectCopy
+InlineObjectHash
+InlineReflectionGetCallerClass
+InlineSmallCode
+InlineSynchronizedMethods
+InlineThreadNatives
+InlineUnsafeOps
+InlineWarmCalls
+LiveNodeCountInliningCutoff
+MultiArrayExpandLimit
+NestedInliningSizeRatio
+NodeCountInliningCutoff
+NodeCountInliningStep
+```
+### PrintEliminateAutoBox
+```
+EliminateAutoBox
+AggressiveUnboxing
+AutoBoxCacheMax
+```
+### PrintEliminateLocks
+```
+EliminateLocks
+EliminateNestedLocks
+```
+### PrintEliminateAllocations
+```
+EliminateAllocationArraySizeLimit
+EliminateAllocationFieldsLimit
+EliminateAllocations
+```
+### PrintEscapeAnalysis
+```
+DoEscapeAnalysis
+```
+### TraceOptimizeFill
+```
+OptimizeFill
+```
+### PrintBlockElimination
+```
+EliminateBlocks
+```
+### PrintCanonicalization
+```
+CanonicalizeNodes
+```
+### PrintCEE
+```
+DoCEE
+```
+### PrintNullCheckElimination
+```
+EliminateNullChecks
+```
+### PrintValueNumbering
+```
+UseGlobalValueNumbering
+UseLocalValueNumbering
+```
+### PrintNullCheckElimination
+```
+PrintOptimizeStringConcat
+```
+### TraceLoopOpts
+```
+AlignVector
+BlockLayoutRotateLoops
+LoopMaxUnroll
+LoopOptsCount
+LoopPercentProfileLimit
+LoopStripMiningIter
+LoopStripMiningIterShortLoop
+LoopUnrollLimit
+LoopUnrollMin
+MaxLoopPad
+NumberOfLoopInstrToAlign
+```
+### TraceLoopPredicate
+```
+UseLoopPredicate
+```
+### TraceLoopUnswitching
+```
+LoopUnswitching
+```
+### TracePartialPeeling
+```
+PartialPeelLoop
+PartialPeelNewPhiDelta
+```
+### TraceSuperWord
+```
+UseSuperWord
+```
+### TraceSuperWordLoopUnrollAnalysis
+```
+SuperWordLoopUnrollAnalysis
+```
+### TraceRangeCheckElimination
+```
+RangeCheckElimination
+```
+### PrintOptoPeephole
+```
+OptoPeephole
+```
+### PrintDominators
+```
+DominatorSearchLimit
+```
+### PrintOptimizePtrCompare
+```
+OptimizePtrCompare
+```
+### PrintUnsafeOptimization
+```
+OptimizeUnsafes
+```
+### PrintTieredEvents
+```
+TieredCompilation
+```
+### PrintCFG
+```
+SplitIfBlocks
+```
+
