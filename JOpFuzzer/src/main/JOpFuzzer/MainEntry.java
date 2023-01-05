@@ -4,12 +4,6 @@ import Preprocess.Config;
 import Preprocess.Prepare;
 import org.apache.commons.cli.*;
 
-/**
- * @program: Juzz
- * @description:
- * @author: Haoxiang Jia
- * @create: 2022-07-14 15:30
- **/
 public class MainEntry {
     public static void main(String[] args) throws Exception {
         Options options = new Options();
