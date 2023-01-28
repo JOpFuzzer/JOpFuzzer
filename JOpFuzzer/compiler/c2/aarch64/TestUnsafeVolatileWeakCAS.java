@@ -119,7 +119,7 @@ class TestUnsafeVolatileWeakCAS
 
     public boolean testObj(Object x, Object o)
     {
-        return unsafe.weakCompareAndSetReference(this, f_obj_off, x, o);
+        return unsafe.weakCompareAndSetObject(this, f_obj_off, x, o);
     }
 
     public boolean testLong(long x, long i)

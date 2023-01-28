@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,8 +28,9 @@
  * @library / /test/lib
  * @library ../common/patches
  * @modules jdk.internal.vm.ci/jdk.vm.ci.hotspot:+open
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @build jdk.internal.vm.ci/jdk.vm.ci.hotspot.CompilerToVMHelper
  * @run main/othervm -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI
  *                  -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
@@ -46,7 +47,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import jdk.test.whitebox.WhiteBox;
+import sun.hotspot.WhiteBox;
 
 public class GetFlagValueTest {
     public static void main(String[] args) throws Exception {
@@ -63,11 +64,8 @@ public class GetFlagValueTest {
         ProcessBuilder pb;
         OutputAnalyzer out;
 
-        pb = ProcessTools.createJavaProcessBuilder(
-            "-XX:+UnlockExperimentalVMOptions",
-            "-XX:+EnableJVMCI",
-            "-XX:+PrintFlagsFinal",
-            "-version");
+        String[] arguments = {"-XX:+UnlockExperimentalVMOptions", "-XX:+EnableJVMCI", "-XX:+PrintFlagsFinal", "-version"};
+        pb = ProcessTools.createJavaProcessBuilder(arguments);
         out = new OutputAnalyzer(pb.start());
 
         out.shouldHaveExitValue(0);

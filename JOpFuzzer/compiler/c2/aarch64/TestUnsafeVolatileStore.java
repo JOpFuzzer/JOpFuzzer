@@ -74,6 +74,6 @@ class TestUnsafeVolatileStore
 
     public void testObj(Object o)
     {
-        unsafe.putReferenceVolatile(this, f_obj_off, o);
+        unsafe.putObjectVolatile(this, f_obj_off, o);
     }
 }

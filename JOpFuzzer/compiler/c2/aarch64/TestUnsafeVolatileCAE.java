@@ -114,7 +114,7 @@ class TestUnsafeVolatileCAE
 
     public Object testObj(Object x, Object o)
     {
-        return unsafe.compareAndExchangeReference(this, f_obj_off, x, o);
+        return unsafe.compareAndExchangeObject(this, f_obj_off, x, o);
     }
     public long testLong(long x, long i)
     {

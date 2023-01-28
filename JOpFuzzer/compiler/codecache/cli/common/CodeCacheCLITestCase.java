@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2015, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,7 +24,7 @@ package compiler.codecache.cli.common;
 
 import jdk.test.lib.Platform;
 import jdk.test.lib.cli.CommandLineOptionTest;
-import jdk.test.whitebox.code.BlobType;
+import sun.hotspot.code.BlobType;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -66,9 +66,9 @@ public class CodeCacheCLITestCase {
     public enum CommonDescriptions {
         /**
          * Verifies that in interpreted mode PrintCodeCache output contains
-         * the whole code cache. Int mode disables SegmentedCodeCache with a warning.
+         * only NonNMethod code heap.
          */
-        INT_MODE(ONLY_SEGMENTED, EnumSet.of(BlobType.All), USE_INT_MODE),
+        INT_MODE(ONLY_SEGMENTED, EnumSet.of(BlobType.NonNMethod), USE_INT_MODE),
         /**
          * Verifies that with disabled SegmentedCodeCache PrintCodeCache output
          * contains only CodeCache's entry.
@@ -87,11 +87,11 @@ public class CodeCacheCLITestCase {
                         false)),
         /**
          * Verifies that with TieredStopAtLevel=0 PrintCodeCache output will
-         * warn about SegmentedCodeCache and contain information about all
+         * contain information about non-nmethods and non-profiled nmethods
          * heaps only.
          */
         TIERED_LEVEL_0(SEGMENTED_SERVER,
-                EnumSet.of(BlobType.All),
+                EnumSet.of(BlobType.NonNMethod, BlobType.MethodNonProfiled),
                 CommandLineOptionTest.prepareBooleanFlag(TIERED_COMPILATION,
                         true),
                 CommandLineOptionTest.prepareNumericFlag(TIERED_STOP_AT, 0)),

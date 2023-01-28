@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -32,9 +32,7 @@ import jdk.vm.ci.code.site.DataPatch;
 import jdk.vm.ci.code.site.Site;
 import jdk.vm.ci.hotspot.HotSpotCompiledCode;
 import jdk.vm.ci.hotspot.HotSpotCompiledCode.Comment;
-import jdk.vm.ci.hotspot.HotSpotCompiledNmethod;
 import jdk.vm.ci.hotspot.HotSpotConstantReflectionProvider;
-import jdk.vm.ci.hotspot.HotSpotResolvedJavaMethod;
 import jdk.vm.ci.meta.Assumptions.Assumption;
 import jdk.vm.ci.meta.MetaAccessProvider;
 import jdk.vm.ci.meta.PlatformKind;
@@ -52,7 +50,7 @@ public class CodeInstallerTest {
     protected final MetaAccessProvider metaAccess;
     protected final HotSpotConstantReflectionProvider constantReflection;
 
-    protected final HotSpotResolvedJavaMethod dummyMethod;
+    protected final ResolvedJavaMethod dummyMethod;
 
     public static void dummyMethod() {
     }
@@ -71,13 +69,12 @@ public class CodeInstallerTest {
             Assert.fail();
         }
 
-        dummyMethod = (HotSpotResolvedJavaMethod) metaAccess.lookupJavaMethod(method);
+        dummyMethod = metaAccess.lookupJavaMethod(method);
     }
 
     protected void installEmptyCode(Site[] sites, Assumption[] assumptions, Comment[] comments, int dataSectionAlignment, DataPatch[] dataSectionPatches, StackSlot deoptRescueSlot) {
-        HotSpotCompiledCode code = new HotSpotCompiledNmethod("dummyMethod", new byte[0], 0, sites, assumptions, new ResolvedJavaMethod[]{dummyMethod}, comments, new byte[8], dataSectionAlignment,
-                        dataSectionPatches, false, 0, deoptRescueSlot,
-                        dummyMethod, 0, 1, 0L, false);
+        HotSpotCompiledCode code = new HotSpotCompiledCode("dummyMethod", new byte[0], 0, sites, assumptions, new ResolvedJavaMethod[]{dummyMethod}, comments, new byte[8], dataSectionAlignment,
+                        dataSectionPatches, false, 0, deoptRescueSlot);
         codeCache.addCode(dummyMethod, code, null, null);
     }
 

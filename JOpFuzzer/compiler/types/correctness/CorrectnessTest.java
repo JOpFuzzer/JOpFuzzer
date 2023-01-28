@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,8 +30,9 @@
  * @modules java.base/jdk.internal.misc
  *          java.management
  *
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm -Xbootclasspath/a:. -XX:+IgnoreUnrecognizedVMOptions -XX:+UnlockExperimentalVMOptions
  *                   -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI
  *                   -XX:TypeProfileLevel=222 -XX:+UseTypeSpeculation
@@ -76,7 +77,7 @@ import compiler.types.correctness.scenarios.ReceiverAtInvokes;
 import compiler.types.correctness.scenarios.Scenario;
 import jdk.test.lib.Asserts;
 import jdk.test.lib.Platform;
-import jdk.test.whitebox.WhiteBox;
+import sun.hotspot.WhiteBox;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

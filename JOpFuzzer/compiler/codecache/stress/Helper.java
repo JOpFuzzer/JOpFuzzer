@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,20 +26,21 @@ package compiler.codecache.stress;
 import jdk.test.lib.Asserts;
 import jdk.test.lib.ByteCodeLoader;
 import jdk.test.lib.InfiniteLoop;
-import jdk.test.whitebox.WhiteBox;
+import jdk.test.lib.Utils;
+import sun.hotspot.WhiteBox;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ThreadFactory;
 
 public final class Helper {
-    public static final boolean VIRTUAL_THREAD = Boolean.getBoolean("helperVirtualThread");
     public static final WhiteBox WHITE_BOX = WhiteBox.getWhiteBox();
+    public static final Random RNG = Utils.getRandomInstance();
 
     private static final long THRESHOLD = WHITE_BOX.getIntxVMFlag("CompileThreshold");
-    private static final String TEST_CASE_IMPL_CLASS_NAME = TestCaseImpl.class.getName();
+    private static final String TEST_CASE_IMPL_CLASS_NAME = "compiler.codecache.stress.Helper$TestCaseImpl";
     private static byte[] CLASS_DATA;
     static {
         try {
@@ -57,34 +58,9 @@ public final class Helper {
     }
 
     public static void startInfiniteLoopThread(Runnable action, long millis) {
-        startInfiniteLoopThread(threadFactory(VIRTUAL_THREAD), action, millis);
-    }
-
-    public static void startInfiniteLoopThread(ThreadFactory threadFactory, Runnable action, long millis) {
-        threadFactory.newThread(new InfiniteLoop(action, millis)).start();
-    }
-
-    public static ThreadFactory threadFactory(boolean virtual) {
-        // After virtual thread Preview:
-        // return (virtual ? Thread.ofVirtual() : Thread.ofPlatform().daemon()).factory();
-        if (virtual) {
-            return virtualThreadFactory();
-        } else {
-            return runnable -> {
-                Thread t = new Thread(runnable);
-                t.setDaemon(true);
-                return t;
-            };
-        }
-    }
-
-    private static ThreadFactory virtualThreadFactory() {
-        try {
-            return (ThreadFactory)Class.forName("java.lang.Thread$Builder").getMethod("factory")
-                .invoke(Thread.class.getMethod("ofVirtual").invoke(null));
-        } catch (ReflectiveOperationException ex) {
-            throw new AssertionError(ex);
-        }
+        Thread t = new Thread(new InfiniteLoop(action, millis));
+        t.setDaemon(true);
+        t.start();
     }
 
     public static int callMethod(Callable<Integer> callable, int expected) {
@@ -133,4 +109,34 @@ public final class Helper {
         int method();
         int expectedValue();
     }
+
+    public static class TestCaseImpl implements TestCase {
+        private static final int RETURN_VALUE = 42;
+        private static final int RECURSION_DEPTH = 10;
+        private volatile int i;
+
+        @Override
+        public Callable<Integer> getCallable() {
+            return () -> {
+                i = 0;
+                return method();
+            };
+        }
+
+        @Override
+        public int method() {
+            ++i;
+            int result = RETURN_VALUE;
+            if (i < RECURSION_DEPTH) {
+                return result + method();
+            }
+            return result;
+        }
+
+        @Override
+        public int expectedValue() {
+            return RETURN_VALUE * RECURSION_DEPTH;
+        }
+    }
+
 }

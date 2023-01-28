@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2020, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,6 +28,7 @@ import jdk.test.lib.Utils;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.Instrumentation;
+import java.lang.management.ManagementFactory;
 import java.nio.file.Paths;
 import java.security.ProtectionDomain;
 
@@ -83,7 +84,9 @@ public class Agent implements ClassFileTransformer {
         // Create speculative trap entries
         Test.m();
 
-        String pid = Long.toString(ProcessHandle.current().pid());
+        String nameOfRunningVM = ManagementFactory.getRuntimeMXBean().getName();
+        int p = nameOfRunningVM.indexOf('@');
+        String pid = nameOfRunningVM.substring(0, p);
 
         // Make the nmethod go away
         for (int i = 0; i < 10; i++) {

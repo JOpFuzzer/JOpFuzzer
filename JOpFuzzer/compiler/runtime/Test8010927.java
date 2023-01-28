@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,8 +27,9 @@
  * @summary Kitchensink crashed with SIGSEGV, Problematic frame: v ~StubRoutines::checkcast_arraycopy
  * @library /test/lib
  * @modules java.base/jdk.internal.misc:+open
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm -XX:+UnlockDiagnosticVMOptions -XX:+IgnoreUnrecognizedVMOptions
  *                   -XX:+WhiteBoxAPI -Xbootclasspath/a:. -Xmx128m -XX:NewSize=20971520
  *                   -XX:MaxNewSize=32m -XX:-UseTLAB -XX:-UseAdaptiveSizePolicy
@@ -38,7 +39,7 @@
 package compiler.runtime;
 
 import jdk.internal.misc.Unsafe;
-import jdk.test.whitebox.WhiteBox;
+import sun.hotspot.WhiteBox;
 
 import java.lang.reflect.Field;
 

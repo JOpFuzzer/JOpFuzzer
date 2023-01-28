@@ -38,19 +38,6 @@
  *                   compiler.arraycopy.TestArrayCopyAsLoadsStores
  */
 
-/*
- * @test
- * @bug 8282590
- * @library /
- *
- * @run main/othervm -ea -XX:-BackgroundCompilation -XX:-UseOnStackReplacement
- *                   -XX:CompileCommand=dontinline,compiler.arraycopy.TestArrayCopyAsLoadsStores::m*
- *                   -XX:TypeProfileLevel=200
- *                   -XX:+IgnoreUnrecognizedVMOptions -XX:+StressArrayCopyMacroNode
- *                   -XX:-TieredCompilation -XX:+StressReflectiveCode -XX:-ReduceInitialCardMarks
- *                   compiler.arraycopy.TestArrayCopyAsLoadsStores
- */
-
 package compiler.arraycopy;
 
 import java.util.Arrays;

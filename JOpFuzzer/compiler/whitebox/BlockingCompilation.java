@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2018 SAP SE. All rights reserved.
+ * Copyright (c) 2016, 2018, SAP SE. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,14 +25,12 @@
  * @test
  * @bug 8150646 8153013
  * @summary Add support for blocking compiles through whitebox API
+ * @requires vm.compiler1.enabled | !vm.graal.enabled
  * @modules java.base/jdk.internal.misc
  * @library /test/lib /
- *
- * @requires vm.compiler1.enabled | !vm.graal.enabled
- * @requires vm.opt.DeoptimizeALot != true
- *
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm
  *        -Xbootclasspath/a:.
  *        -Xmixed
@@ -45,15 +43,17 @@
 package compiler.whitebox;
 
 import compiler.testlibrary.CompilerUtils;
-import jdk.test.whitebox.WhiteBox;
+import sun.hotspot.WhiteBox;
 
 import java.lang.reflect.Method;
+import java.util.Random;
 
 public class BlockingCompilation {
     private static final WhiteBox WB = WhiteBox.getWhiteBox();
+    private static final Random RANDOM = new Random();
 
     public static int foo() {
-        return 42; //constant's value is arbitrary and meaningless
+        return RANDOM.nextInt();
     }
 
     public static void main(String[] args) throws Exception {

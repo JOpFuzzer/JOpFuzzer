@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,31 +23,22 @@
 
 /*
  * @test OverloadCompileQueueTest
- * @key stress randomness
  * @summary stressing code cache by overloading compile queues
  * @library /test/lib /
  * @modules java.base/jdk.internal.misc
  *          java.management
  *
- * @build jdk.test.whitebox.WhiteBox
- *        compiler.codecache.stress.TestCaseImpl
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm -Xbootclasspath/a:. -XX:+UnlockDiagnosticVMOptions
  *                   -XX:+WhiteBoxAPI
  *                   -XX:CompileCommand=dontinline,compiler.codecache.stress.Helper$TestCase::method
- *                   -XX:CompileCommand=exclude,java.lang.Thread::sleep
- *                   -XX:CompileCommand=exclude,jdk.internal.event.ThreadSleepEvent::*
- *                   -XX:CompileCommand=exclude,jdk.internal.event.SleepEvent::*
- *                   -XX:CompileCommand=exclude,jdk.internal.event.Event::*
  *                   -XX:-SegmentedCodeCache
  *                   compiler.codecache.stress.OverloadCompileQueueTest
  * @run main/othervm -Xbootclasspath/a:. -XX:+UnlockDiagnosticVMOptions
  *                   -XX:+WhiteBoxAPI
  *                   -XX:CompileCommand=dontinline,compiler.codecache.stress.Helper$TestCase::method
- *                   -XX:CompileCommand=exclude,java.lang.Thread::sleep
- *                   -XX:CompileCommand=exclude,jdk.internal.event.ThreadSleepEvent::*
- *                   -XX:CompileCommand=exclude,jdk.internal.event.SleepEvent::*
- *                   -XX:CompileCommand=exclude,jdk.internal.event.Event::*
  *                   -XX:+SegmentedCodeCache
  *                   compiler.codecache.stress.OverloadCompileQueueTest
  */
@@ -55,40 +46,12 @@
 package compiler.codecache.stress;
 
 import jdk.test.lib.Platform;
-import jdk.test.lib.Utils;
 
 import java.lang.reflect.Method;
 import java.util.stream.IntStream;
-import java.util.Random;
-
-class LockUnlockThread extends Thread {
-    private static final int MAX_SLEEP = 10000;
-    private static final int DELAY_BETWEEN_LOCKS = 100;
-    private final Random rng = Utils.getRandomInstance();
-
-    public volatile boolean isActive = true;
-
-    @Override
-    public void run() {
-        try {
-            while (isActive) {
-                int timeInLockedState = rng.nextInt(MAX_SLEEP);
-                Helper.WHITE_BOX.lockCompilation();
-                Thread.sleep(timeInLockedState);
-                Helper.WHITE_BOX.unlockCompilation();
-                Thread.sleep(DELAY_BETWEEN_LOCKS);
-            }
-        } catch (InterruptedException e) {
-            if (isActive) {
-                throw new Error("TESTBUG: LockUnlockThread was unexpectedly interrupted", e);
-            }
-        } finally {
-            Helper.WHITE_BOX.unlockCompilation();
-        }
-    }
-}
 
 public class OverloadCompileQueueTest implements Runnable {
+    private static final int MAX_SLEEP = 10000;
     private static final String METHOD_TO_ENQUEUE = "method";
     private static final int LEVEL_SIMPLE = 1;
     private static final int LEVEL_FULL_OPTIMIZATION = 4;
@@ -111,18 +74,15 @@ public class OverloadCompileQueueTest implements Runnable {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
-        LockUnlockThread lockUnlockThread = new LockUnlockThread();
-        lockUnlockThread.start();
-
+    public static void main(String[] args) {
         if (Platform.isInt()) {
             throw new Error("TESTBUG: test can not be run in interpreter");
         }
         new CodeCacheStressRunner(new OverloadCompileQueueTest()).runTest();
+    }
 
-        lockUnlockThread.isActive = false;
-        lockUnlockThread.interrupt();
-        lockUnlockThread.join();
+    public OverloadCompileQueueTest() {
+        Helper.startInfiniteLoopThread(this::lockUnlock, 100L);
     }
 
     @Override
@@ -139,6 +99,18 @@ public class OverloadCompileQueueTest implements Runnable {
         }
         for (int compLevel : AVAILABLE_LEVELS) {
             Helper.WHITE_BOX.enqueueMethodForCompilation(mEnqueue, compLevel);
+        }
+    }
+
+    private void lockUnlock() {
+        try {
+            int sleep = Helper.RNG.nextInt(MAX_SLEEP);
+            Helper.WHITE_BOX.lockCompilation();
+            Thread.sleep(sleep);
+        } catch (InterruptedException e) {
+            throw new Error("TESTBUG: lockUnlocker thread was unexpectedly interrupted", e);
+        } finally {
+            Helper.WHITE_BOX.unlockCompilation();
         }
     }
 

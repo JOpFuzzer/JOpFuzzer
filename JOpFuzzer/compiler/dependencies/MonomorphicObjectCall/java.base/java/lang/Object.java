@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1994, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1994, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,7 +23,7 @@
 
 package java.lang;
 
-import jdk.internal.vm.annotation.IntrinsicCandidate;
+import jdk.internal.HotSpotIntrinsicCandidate;
 
 /**
  * Slightly modified version of java.lang.Object that replaces
@@ -31,37 +31,38 @@ import jdk.internal.vm.annotation.IntrinsicCandidate;
  */
 public class Object {
 
-    @IntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public Object() {}
 
-    @IntrinsicCandidate
+    private static native void registerNatives();
+    static {
+        registerNatives();
+    }
+
+    @HotSpotIntrinsicCandidate
     public final native Class<?> getClass();
 
-    @IntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public native int hashCode();
 
     public boolean equals(Object obj) {
         return (this == obj);
     }
 
-    @IntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     protected native Object clone() throws CloneNotSupportedException;
 
     public String toString() {
         return getClass().getName() + "@" + Integer.toHexString(hashCode());
     }
 
-    @IntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final native void notify();
 
-    @IntrinsicCandidate
+    @HotSpotIntrinsicCandidate
     public final native void notifyAll();
 
-    private final native void wait0(long timeout) throws InterruptedException;
-
-    public final void wait(long timeout) throws InterruptedException {
-        wait0(timeout);
-    }
+    public final native void wait(long timeout) throws InterruptedException;
 
     public final void wait(long timeout, int nanos) throws InterruptedException {
         if (timeout < 0) {
@@ -77,11 +78,11 @@ public class Object {
             timeout++;
         }
 
-        wait0(timeout);
+        wait(timeout);
     }
 
     public final void wait() throws InterruptedException {
-        wait0(0);
+        wait(0);
     }
 
     /**

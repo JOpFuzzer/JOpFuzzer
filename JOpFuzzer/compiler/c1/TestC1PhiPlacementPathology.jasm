@@ -22,7 +22,7 @@
  *
  */
 super public class TestC1PhiPlacementPathology
-   version 62:0
+   version 55:0
 {
   public static volatile Field sideEffect:I;
 

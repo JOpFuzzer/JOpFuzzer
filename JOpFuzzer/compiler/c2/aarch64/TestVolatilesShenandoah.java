@@ -28,9 +28,8 @@
  *
  * @modules java.base/jdk.internal.misc
  *
- * @requires vm.flagless
  * @requires os.arch=="aarch64" & vm.debug == true &
- *           vm.flavor == "server" &
+ *           vm.flavor == "server" & !vm.graal.enabled &
  *           vm.gc.Shenandoah
  *
  * @build compiler.c2.aarch64.TestVolatiles
@@ -39,10 +38,6 @@
  *        compiler.c2.aarch64.TestVolatileStore
  *        compiler.c2.aarch64.TestUnsafeVolatileStore
  *        compiler.c2.aarch64.TestUnsafeVolatileCAS
- *        compiler.c2.aarch64.TestUnsafeVolatileWeakCAS
- *        compiler.c2.aarch64.TestUnsafeVolatileCAE
- *        compiler.c2.aarch64.TestUnsafeVolatileGAS
- *        compiler.c2.aarch64.TestUnsafeVolatileGAA
  *
  * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
  *      TestVolatileLoad Shenandoah
@@ -60,18 +55,6 @@
  *      TestUnsafeVolatileCAS Shenandoah
  *
  * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileWeakCAS Shenandoah
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileCAE Shenandoah
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileGAS Shenandoah
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileGAA Shenandoah
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
  *      TestVolatileLoad ShenandoahIU
  *
  * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
@@ -85,19 +68,6 @@
  *
  * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
  *      TestUnsafeVolatileCAS ShenandoahIU
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileWeakCAS ShenandoahIU
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileCAE ShenandoahIU
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileGAS ShenandoahIU
- *
- * @run driver compiler.c2.aarch64.TestVolatilesShenandoah
- *      TestUnsafeVolatileGAA ShenandoahIU
- *
  */
 
 package compiler.c2.aarch64;

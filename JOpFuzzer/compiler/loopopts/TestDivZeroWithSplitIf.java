@@ -24,12 +24,12 @@
 
 /*
  * @test
- * @key stress randomness
+ * @key stress
  * @bug 8257822
  * @summary Verify that zero check is executed before division/modulo operation.
  * @requires vm.compiler2.enabled
  * @run main/othervm -Xcomp -XX:-TieredCompilation -XX:CompileOnly=compiler/loopopts/TestDivZeroWithSplitIf::test
- *                   -XX:+UnlockDiagnosticVMOptions -XX:+StressGCM -XX:StressSeed=873732072 compiler.loopopts.TestDivZeroWithSplitIf
+ *                   -XX:+UnlockDiagnosticVMOptions -XX:+StressGCM compiler.loopopts.TestDivZeroWithSplitIf
  * @run main/othervm -Xcomp -XX:-TieredCompilation -XX:CompileOnly=compiler/loopopts/TestDivZeroWithSplitIf::test
  *                   -XX:+UnlockDiagnosticVMOptions -XX:+StressGCM compiler.loopopts.TestDivZeroWithSplitIf
  */

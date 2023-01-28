@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,10 +26,12 @@
  * @bug 8015774
  * @summary Checks VM options related to the segmented code cache
  * @library /test/lib
- * @requires vm.flagless
+ * @modules java.base/jdk.internal.misc
+ *          java.management
  *
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm -Xbootclasspath/a:. -XX:+UnlockDiagnosticVMOptions
  *                   -XX:+WhiteBoxAPI
  *                   compiler.codecache.CheckSegmentedCodeCache
@@ -40,7 +42,7 @@ package compiler.codecache;
 import jdk.test.lib.process.OutputAnalyzer;
 import jdk.test.lib.Platform;
 import jdk.test.lib.process.ProcessTools;
-import jdk.test.whitebox.WhiteBox;
+import sun.hotspot.WhiteBox;
 
 public class CheckSegmentedCodeCache {
     private static final WhiteBox WHITE_BOX = WhiteBox.getWhiteBox();
@@ -58,10 +60,10 @@ public class CheckSegmentedCodeCache {
                 out.shouldContain(NON_METHOD);
             } catch (RuntimeException e) {
                 // Check if TieredCompilation is disabled (in a client VM)
-                if (Platform.isTieredSupported()) {
+                if(!out.getOutput().contains("-XX:+TieredCompilation not supported in this VM")) {
                     // Code cache is not segmented
                     throw new RuntimeException("No code cache segmentation.");
-                }
+                    }
             }
         } else {
             out.shouldNotContain(NON_METHOD);

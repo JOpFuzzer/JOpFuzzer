@@ -23,7 +23,7 @@
  */
 
 super public class compiler/parsing/TestExceptionBlockWithPredecessors
-	version 59:0
+	version 55:0
 {
 
 Field loopCounter:I;

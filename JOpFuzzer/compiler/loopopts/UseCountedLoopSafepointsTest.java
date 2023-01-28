@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -30,8 +30,9 @@
  * @requires vm.compMode != "Xint" & vm.flavor == "server" & (vm.opt.TieredStopAtLevel == null | vm.opt.TieredStopAtLevel == 4) & vm.debug == true
  * @requires !vm.emulatedClient & !vm.graal.enabled
  * @modules java.base/jdk.internal.misc
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run driver compiler.loopopts.UseCountedLoopSafepointsTest
  */
 
@@ -73,12 +74,12 @@ public class UseCountedLoopSafepointsTest {
         List<Node> safePoints = new ArrayList<>();
         List<Node> loopEnds = new ArrayList<>();
         for (String line : oa.getOutput().split("\\n")) {
-            int separatorIndex = line.indexOf("  ===");
+            int separatorIndex = line.indexOf("\t===");
             if (separatorIndex > -1) {
                 String header = line.substring(0, separatorIndex);
-                if (header.endsWith("SafePoint")) {
+                if (header.endsWith("\tSafePoint")) {
                     safePoints.add(new Node("SafePoint", line));
-                } else if (header.endsWith("CountedLoopEnd")) {
+                } else if (header.endsWith("\tCountedLoopEnd")) {
                     loopEnds.add(new Node("CountedLoopEnd", line));
                 }
             }
@@ -110,7 +111,7 @@ public class UseCountedLoopSafepointsTest {
             List<Integer> tmpFrom = new ArrayList<>();
             List<Integer> tmpTo = new ArrayList<>();
             // parse string like: " $id    $name       ===  $to1 $to2 ...   [[ $from1 $from2 ... ]] $anything"
-            // example:  318    SafePoint  ===  317  1  304  1  1  10  308  [[ 97  74 ]]  ...
+            // example:  318    SafePoint       ===  317  1  304  1  1  10  308  [[ 97  74 ]]  ...
             id = Integer.parseInt(str.substring(1, str.indexOf(name)).trim());
             Arrays.stream(str.substring(str.indexOf("===") + 4, str.indexOf("[[")).trim().split("\\s+"))
                   .map(Integer::parseInt)

@@ -24,14 +24,12 @@
 
 /*
  * @test
- * @key stress randomness
+ * @key stress
  * @bug 8275610
  * @summary Null check for field access of object floats above null check resulting in a segfault.
  * @requires vm.compiler2.enabled
  * @run main/othervm -Xbatch -XX:CompileCommand=compileonly,compiler.loopopts.TestEliminateNullCheckWithSplitIf::test
- *                   -XX:+UnlockDiagnosticVMOptions -XX:+StressGCM -XX:StressSeed=42 compiler.loopopts.TestEliminateNullCheckWithSplitIf
- * @run main/othervm -Xbatch -XX:CompileCommand=compileonly,compiler.loopopts.TestEliminateNullCheckWithSplitIf::test
- *                   -XX:+UnlockDiagnosticVMOptions -XX:+StressGCM -XX:+StressIGVN compiler.loopopts.TestEliminateNullCheckWithSplitIf
+ *                   -XX:+UnlockDiagnosticVMOptions -XX:+StressGCM  compiler.loopopts.TestEliminateNullCheckWithSplitIf
  */
 
 package compiler.loopopts;

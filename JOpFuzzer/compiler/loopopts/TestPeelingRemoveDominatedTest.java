@@ -23,7 +23,7 @@
 
 /*
  * @test
- * @key stress randomness
+ * @key stress
  * @requires vm.compiler2.enabled
  * @bug 8269795
  * @summary PhaseIdealLoop::peeled_dom_test_elim wrongly moves a non-dominated test out of a loop together with control dependent data nodes.

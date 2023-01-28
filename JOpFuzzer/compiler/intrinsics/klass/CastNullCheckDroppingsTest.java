@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,38 +25,30 @@
  * @test NullCheckDroppingsTest
  * @bug 8054492
  * @summary Casting can result in redundant null checks in generated code
- * @requires vm.hasJFR
  * @requires vm.flavor == "server" & !vm.emulatedClient & !vm.graal.enabled
  * @library /test/lib
  * @modules java.base/jdk.internal.misc
  *          java.management
  *
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm -Xbootclasspath/a:. -XX:+IgnoreUnrecognizedVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI
  *                   -Xmixed -XX:-BackgroundCompilation -XX:-TieredCompilation -XX:CompileThreshold=1000
- *                   -XX:+UnlockExperimentalVMOptions -XX:PerMethodTrapLimit=100 -XX:-StressReflectiveCode
- *                   -XX:+UncommonNullCast -XX:-StressMethodHandleLinkerInlining -XX:TypeProfileLevel=0
  *                   -XX:CompileCommand=exclude,compiler.intrinsics.klass.CastNullCheckDroppingsTest::runTest
  *                   compiler.intrinsics.klass.CastNullCheckDroppingsTest
  */
 
 package compiler.intrinsics.klass;
 
-import jdk.jfr.Recording;
-import jdk.jfr.consumer.RecordedEvent;
 import jdk.test.lib.Platform;
-import jdk.test.lib.jfr.EventNames;
-import jdk.test.lib.jfr.Events;
-import jdk.test.whitebox.WhiteBox;
-import jdk.test.whitebox.code.NMethod;
+import sun.hotspot.WhiteBox;
+import sun.hotspot.code.NMethod;
 
-import java.io.IOException;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.function.BiFunction;
 
 public class CastNullCheckDroppingsTest {
@@ -81,7 +73,7 @@ public class CastNullCheckDroppingsTest {
     }
 
     static volatile String svalue = "A";
-    static volatile Object onull = null;
+    static volatile String snull = null;
     static volatile Integer iobj = new Integer(0);
     static volatile int[] arr = new int[2];
     static volatile Class objClass = String.class;
@@ -110,35 +102,35 @@ public class CastNullCheckDroppingsTest {
         Method methodFunction  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testFunction",  String.class);
 
         CastNullCheckDroppingsTest t = new CastNullCheckDroppingsTest();
-        t.runTest(methodClassCast, false, svalue);
-        t.runTest(methodMHCast,    false, svalue);
-        t.runTest(methodMHSetter,  false, svalue);
-        t.runTest(methodFunction,  false, svalue);
+        t.runTest(methodClassCast, false);
+        t.runTest(methodMHCast,    false);
+        t.runTest(methodMHSetter,  false);
+        t.runTest(methodFunction,  false);
 
         // Edge cases
         Method methodClassCastNull = CastNullCheckDroppingsTest.class.getDeclaredMethod("testClassCastNull", String.class);
         Method methodNullClassCast = CastNullCheckDroppingsTest.class.getDeclaredMethod("testNullClassCast", String.class);
         Method methodClassCastObj  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testClassCastObj",  Object.class);
         Method methodObjClassCast  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testObjClassCast",  String.class);
+        Method methodVarClassCast  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testVarClassCast",  String.class);
         Method methodClassCastInt  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testClassCastInt",  Object.class);
         Method methodIntClassCast  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testIntClassCast",  Object.class);
         Method methodClassCastint  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testClassCastint",  Object.class);
         Method methodintClassCast  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testintClassCast",  Object.class);
         Method methodClassCastPrim = CastNullCheckDroppingsTest.class.getDeclaredMethod("testClassCastPrim", Object.class);
         Method methodPrimClassCast = CastNullCheckDroppingsTest.class.getDeclaredMethod("testPrimClassCast", Object.class);
-        Method methodVarClassCast  = CastNullCheckDroppingsTest.class.getDeclaredMethod("testVarClassCast",  Class.class);
 
-        t.runTest(methodClassCastNull, false, svalue);
-        t.runTest(methodNullClassCast, false, svalue);
-        t.runTest(methodClassCastObj,  false, svalue);
-        t.runTest(methodObjClassCast,  true,  svalue);
-        t.runTest(methodClassCastInt,  false, svalue);
-        t.runTest(methodIntClassCast,  true,  svalue);
-        t.runTest(methodClassCastint,  false, svalue);
-        t.runTest(methodintClassCast,  false, svalue);
-        t.runTest(methodClassCastPrim, false, svalue);
-        t.runTest(methodPrimClassCast, true,  svalue);
-        t.runTest(methodVarClassCast,  true,  objClass);
+        t.runTest(methodClassCastNull, false);
+        t.runTest(methodNullClassCast, false);
+        t.runTest(methodClassCastObj,  false);
+        t.runTest(methodObjClassCast,  true);
+        t.runTest(methodVarClassCast,  true);
+        t.runTest(methodClassCastInt,  false);
+        t.runTest(methodIntClassCast,  true);
+        t.runTest(methodClassCastint,  false);
+        t.runTest(methodintClassCast,  false);
+        t.runTest(methodClassCastPrim, false);
+        t.runTest(methodPrimClassCast, true);
     }
 
     void testClassCast(String s) {
@@ -184,10 +176,11 @@ public class CastNullCheckDroppingsTest {
         }
     }
 
-    void testVarClassCast(Class cl) {
+    void testVarClassCast(String s) {
+        Class cl = (s == null) ? null : String.class;
         try {
             ssink = (String)cl.cast(svalue);
-            if (cl == null) {
+            if (s == null) {
                 throw new AssertionError("NullPointerException is not thrown");
             }
         } catch (NullPointerException t) {
@@ -293,19 +286,15 @@ public class CastNullCheckDroppingsTest {
         }
     }
 
-    void runTest(Method method, boolean deopt, Object value) {
+    void runTest(Method method, boolean deopt) {
         if (method == null) {
             throw new AssertionError("method was not found");
         }
         // Ensure method is compiled
         WHITE_BOX.testSetDontInlineMethod(method, true);
-        Recording recording = new Recording();
-        recording.enable(EventNames.Deoptimization);
-        recording.start();
-
         for (int i = 0; i < 3000; i++) {
             try {
-                method.invoke(this, value);
+                method.invoke(this, svalue);
             } catch (Exception e) {
                 throw new Error("Unexpected exception: ", e);
             }
@@ -315,23 +304,11 @@ public class CastNullCheckDroppingsTest {
         // Passing null should cause a de-optimization
         // if method is compiled with a null-check.
         try {
-            method.invoke(this, onull);
+            method.invoke(this, snull);
         } catch (Exception e) {
             throw new Error("Unexpected exception: ", e);
         }
-        recording.stop();
-        List<RecordedEvent> events;
-        try {
-            events = Events.fromRecording(recording);
-        } catch (IOException e) {
-            throw new Error("failed to read jfr events", e);
-        }
-
-        checkDeoptimization(events, nm.compile_id, deopt);
-
-        if (!deopt) {
-            checkNoRecompilation(method, nm);
-        }
+        checkDeoptimization(method, nm, deopt);
     }
 
     static NMethod getNMethod(Method test) {
@@ -350,29 +327,15 @@ public class CastNullCheckDroppingsTest {
         return nm;
     }
 
-    static void checkDeoptimization(List<RecordedEvent> events, int compilerId, boolean mustExist) {
-        boolean exist = events.stream()
-                .filter(e -> e.getEventType().getName().equals(EventNames.Deoptimization))
-                .anyMatch(e -> compilerId == Events.assertField(e, "compileId").<Integer>getValue());
-
-        if (exist != mustExist) {
-            System.err.println("events:");
-            System.err.println(events);
-            throw new AssertionError("compilation must " + (mustExist ? "" : " not ") + " get deoptimized");
+    static void checkDeoptimization(Method method, NMethod nmOrig, boolean deopt) {
+        // Check deoptimization event (intrinsic Class.cast() works).
+        if (WHITE_BOX.isMethodCompiled(method) == deopt) {
+            throw new AssertionError(method + " was" + (deopt ? " not" : "") + " deoptimized");
         }
-
-        if (mustExist && events.stream()
-                  .filter(e -> e.getEventType().getName().equals(EventNames.Deoptimization))
-                  .filter(e -> compilerId == Events.assertField(e, "compileId").<Integer>getValue())
-                  .noneMatch(e -> "null_check".equals(Events.assertField(e, "reason").getValue()))) {
-            System.err.println("events:");
-            System.err.println(events);
-            throw new AssertionError("no deoptimizations due to null_check found");
+        if (deopt) {
+            return;
         }
-
-    }
-
-    static void checkNoRecompilation(Method method, NMethod nmOrig) {
+        // Ensure no recompilation when no deoptimization is expected.
         NMethod nm = NMethod.get(method, false); // not OSR nmethod
         if (nm == null) {
             throw new AssertionError(method + " missing nmethod?");

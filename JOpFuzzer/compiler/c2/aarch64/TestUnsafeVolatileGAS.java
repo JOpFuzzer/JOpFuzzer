@@ -81,7 +81,7 @@ class TestUnsafeVolatileGAS
 
     public Object testObj(Object o)
     {
-        return unsafe.getAndSetReference(this, f_obj_off, o);
+        return unsafe.getAndSetObject(this, f_obj_off, o);
     }
     public long testLong(long i)
     {

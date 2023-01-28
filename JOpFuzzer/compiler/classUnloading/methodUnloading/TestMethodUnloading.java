@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,9 +28,10 @@
  * @modules java.base/jdk.internal.misc
  * @library /test/lib /
  *
- * @build jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
  *        compiler.classUnloading.methodUnloading.WorkerClass
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                              sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm -Xbootclasspath/a:. -XX:+IgnoreUnrecognizedVMOptions
  *                   -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI
  *                   -XX:-BackgroundCompilation -XX:-UseCompressedOops
@@ -40,7 +41,7 @@
 
 package compiler.classUnloading.methodUnloading;
 
-import jdk.test.whitebox.WhiteBox;
+import sun.hotspot.WhiteBox;
 
 import java.lang.reflect.Method;
 import java.net.URL;

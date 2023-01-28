@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,12 +23,11 @@
 
 /**
  * @test
- * @key randomness
  * @bug 8209951
  * @summary SIGBUS in com.sun.crypto.provider.CipherBlockChaining
  * @library /test/lib /
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox sun.hotspot.WhiteBox$WhiteBoxPermission
  *
  * @run main/othervm -Xbatch
  *     -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
@@ -47,8 +46,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import compiler.whitebox.CompilerWhiteBoxTest;
-import jdk.test.whitebox.code.Compiler;
-import jdk.test.lib.Utils;
+import sun.hotspot.code.Compiler;
 import jtreg.SkippedException;
 
 public class TestCipherBlockChainingEncrypt {
@@ -85,7 +83,7 @@ public class TestCipherBlockChainingEncrypt {
         // generate input data
         byte[] inputText = new byte[INPUT_LENGTH + NUM_PAD_BYTES
                 + PBKDF2_ADD_PAD_BYTES];
-        Utils.getRandomInstance().nextBytes(inputText);
+        new Random().nextBytes(inputText);
 
         try {
             // Encrypt

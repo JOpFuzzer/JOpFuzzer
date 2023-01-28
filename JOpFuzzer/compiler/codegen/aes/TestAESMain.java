@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,13 +25,12 @@
  * @test
  * @bug 7184394
  * @key stress
- * @comment the test isn't marked w/ randomness as it uses predefined key b/c of keySize==128
  * @summary add intrinsics to use AES instructions
  * @library /test/lib /
  * @modules java.base/jdk.internal.misc
  *          java.management
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox sun.hotspot.WhiteBox$WhiteBoxPermission
  *
  * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=CBC
  *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
@@ -98,27 +97,6 @@
  * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DencInputOffset=1 -DencOutputOffset=1 -DdecOutputOffset=1 -DpaddingStr=NoPadding -DmsgSize=640
  *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
  *      compiler.codegen.aes.TestAESMain
- * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DmsgSize=8320
- *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
- *      compiler.codegen.aes.TestAESMain
- * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DencInputOffset=1 -DmsgSize=8326
- *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
- *      compiler.codegen.aes.TestAESMain
- * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DencOutputOffset=1 -DmsgSize=8326
- *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
- *      compiler.codegen.aes.TestAESMain
- * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DdecOutputOffset=1 -DmsgSize=8326
- *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
- *      compiler.codegen.aes.TestAESMain
- * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DencInputOffset=1 -DencOutputOffset=1 -DmsgSize=8326
- *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
- *      compiler.codegen.aes.TestAESMain
- * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DencInputOffset=1 -DencOutputOffset=1 -DdecOutputOffset=1 -DmsgSize=8326
- *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
- *      compiler.codegen.aes.TestAESMain
- * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=GCM -DencInputOffset=1 -DencOutputOffset=1 -DdecOutputOffset=1 -DpaddingStr=NoPadding -DmsgSize=8320
- *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
- *      compiler.codegen.aes.TestAESMain
  *
  * @run main/othervm/timeout=600 -Xbatch -DcheckOutput=true -Dmode=CTR
  *      -XX:+UnlockDiagnosticVMOptions -XX:+WhiteBoxAPI -Xbootclasspath/a:.
@@ -148,7 +126,7 @@
 package compiler.codegen.aes;
 
 import compiler.whitebox.CompilerWhiteBoxTest;
-import jdk.test.whitebox.code.Compiler;
+import sun.hotspot.code.Compiler;
 import jtreg.SkippedException;
 
 public class TestAESMain {

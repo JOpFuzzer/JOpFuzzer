@@ -37,14 +37,13 @@
  *        compiler.jvmci.events.JvmciShutdownEventListener
  * @run driver jdk.test.lib.FileInstaller ./JvmciShutdownEventTest.config
  *     ./META-INF/services/jdk.vm.ci.services.JVMCIServiceLocator
- * @run driver jdk.test.lib.helpers.ClassFileInstaller
+ * @run driver ClassFileInstaller
  *      compiler.jvmci.common.JVMCIHelpers$EmptyHotspotCompiler
  *      compiler.jvmci.common.JVMCIHelpers$EmptyCompilerFactory
  *      compiler.jvmci.common.JVMCIHelpers$EmptyCompilationRequestResult
  *      compiler.jvmci.common.JVMCIHelpers$EmptyVMEventListener
  *      compiler.jvmci.events.JvmciShutdownEventListener
- * @run main/othervm -XX:+UnlockExperimentalVMOptions
- *      compiler.jvmci.events.JvmciShutdownEventTest
+ * @run main/othervm compiler.jvmci.events.JvmciShutdownEventTest
  */
 
 package compiler.jvmci.events;
@@ -67,7 +66,7 @@ public class JvmciShutdownEventTest {
                 "Unexpected exit code with +EnableJVMCI",
                 "Unexpected output with +EnableJVMCI", ExitCode.OK,
                 addTestVMOptions, "-XX:+UnlockExperimentalVMOptions",
-                "-XX:+EnableJVMCI", "-XX:-UseJVMCICompiler", "-Xbootclasspath/a:.",
+                "-XX:+EnableJVMCI", "-Xbootclasspath/a:.",
                 JvmciShutdownEventListener.class.getName()
         );
 

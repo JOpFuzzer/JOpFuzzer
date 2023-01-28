@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2019, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -32,7 +32,7 @@
  *          jdk.internal.vm.ci/jdk.vm.ci.common
  * @compile CodeInstallerTest.java
  * @run junit/othervm -da:jdk.vm.ci... -XX:+UnlockExperimentalVMOptions -XX:+EnableJVMCI
- *             -XX:-UseJVMCICompiler compiler.jvmci.errors.TestInvalidOopMap
+ *             -Djvmci.Compiler=null compiler.jvmci.errors.TestInvalidOopMap
  */
 
 package compiler.jvmci.errors;
@@ -67,15 +67,15 @@ public class TestInvalidOopMap extends CodeInstallerTest {
         BytecodePosition pos = new BytecodePosition(null, dummyMethod, 0);
         DebugInfo info = new DebugInfo(pos);
         info.setReferenceMap(refMap);
-        installEmptyCode(new Site[]{new Infopoint(0, info, InfopointReason.SAFEPOINT)}, new Assumption[0], new Comment[0], 8, new DataPatch[0], StackSlot.get(null, 0, true));
+        installEmptyCode(new Site[]{new Infopoint(0, info, InfopointReason.SAFEPOINT)}, new Assumption[0], new Comment[0], 16, new DataPatch[0], StackSlot.get(null, 0, true));
     }
 
-    @Test(expected = JVMCIError.class)
+    @Test(expected = NullPointerException.class)
     public void testMissingReferenceMap() {
         test(null);
     }
 
-    @Test(expected = ClassCastException.class)
+    @Test(expected = JVMCIError.class)
     public void testInvalidReferenceMap() {
         test(new InvalidReferenceMap());
     }

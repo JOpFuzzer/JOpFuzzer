@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -43,14 +43,7 @@ import static org.testng.Assert.*;
 
 public class JdkInternalMiscUnsafeAccessTestFloat {
     static final int ITERS = Integer.getInteger("iters", 1);
-
-    // More resilience for Weak* tests. These operations may spuriously
-    // fail, and so we do several attempts with delay on failure.
-    // Be mindful of worst-case total time on test, which would be at
-    // roughly (delay*attempts) milliseconds.
-    //
-    static final int WEAK_ATTEMPTS = Integer.getInteger("weakAttempts", 100);
-    static final int WEAK_DELAY_MS = Math.max(1, Integer.getInteger("weakDelay", 1));
+    static final int WEAK_ATTEMPTS = Integer.getInteger("weakAttempts", 10);
 
     static final jdk.internal.misc.Unsafe UNSAFE;
 
@@ -91,16 +84,6 @@ public class JdkInternalMiscUnsafeAccessTestFloat {
         ARRAY_OFFSET = UNSAFE.arrayBaseOffset(float[].class);
         int ascale = UNSAFE.arrayIndexScale(float[].class);
         ARRAY_SHIFT = 31 - Integer.numberOfLeadingZeros(ascale);
-    }
-
-    static void weakDelay() {
-        try {
-            if (WEAK_DELAY_MS > 0) {
-                Thread.sleep(WEAK_DELAY_MS);
-            }
-        } catch (InterruptedException ie) {
-            // Do nothing.
-        }
     }
 
     static float static_v;
@@ -257,72 +240,40 @@ public class JdkInternalMiscUnsafeAccessTestFloat {
             boolean success = false;
             for (int c = 0; c < WEAK_ATTEMPTS && !success; c++) {
                 success = UNSAFE.weakCompareAndSetFloatPlain(base, offset, 1.0f, 2.0f);
-                if (!success) weakDelay();
             }
-            assertEquals(success, true, "success weakCompareAndSetPlain float");
+            assertEquals(success, true, "weakCompareAndSetPlain float");
             float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 2.0f, "success weakCompareAndSetPlain float value");
-        }
-
-        {
-            boolean success = UNSAFE.weakCompareAndSetFloatPlain(base, offset, 1.0f, 3.0f);
-            assertEquals(success, false, "failing weakCompareAndSetPlain float");
-            float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 2.0f, "failing weakCompareAndSetPlain float value");
+            assertEquals(x, 2.0f, "weakCompareAndSetPlain float value");
         }
 
         {
             boolean success = false;
             for (int c = 0; c < WEAK_ATTEMPTS && !success; c++) {
                 success = UNSAFE.weakCompareAndSetFloatAcquire(base, offset, 2.0f, 1.0f);
-                if (!success) weakDelay();
             }
-            assertEquals(success, true, "success weakCompareAndSetAcquire float");
+            assertEquals(success, true, "weakCompareAndSetAcquire float");
             float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 1.0f, "success weakCompareAndSetAcquire float");
-        }
-
-        {
-            boolean success = UNSAFE.weakCompareAndSetFloatAcquire(base, offset, 2.0f, 3.0f);
-            assertEquals(success, false, "failing weakCompareAndSetAcquire float");
-            float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 1.0f, "failing weakCompareAndSetAcquire float value");
+            assertEquals(x, 1.0f, "weakCompareAndSetAcquire float");
         }
 
         {
             boolean success = false;
             for (int c = 0; c < WEAK_ATTEMPTS && !success; c++) {
                 success = UNSAFE.weakCompareAndSetFloatRelease(base, offset, 1.0f, 2.0f);
-                if (!success) weakDelay();
             }
-            assertEquals(success, true, "success weakCompareAndSetRelease float");
+            assertEquals(success, true, "weakCompareAndSetRelease float");
             float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 2.0f, "success weakCompareAndSetRelease float");
-        }
-
-        {
-            boolean success = UNSAFE.weakCompareAndSetFloatRelease(base, offset, 1.0f, 3.0f);
-            assertEquals(success, false, "failing weakCompareAndSetRelease float");
-            float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 2.0f, "failing weakCompareAndSetRelease float value");
+            assertEquals(x, 2.0f, "weakCompareAndSetRelease float");
         }
 
         {
             boolean success = false;
             for (int c = 0; c < WEAK_ATTEMPTS && !success; c++) {
                 success = UNSAFE.weakCompareAndSetFloat(base, offset, 2.0f, 1.0f);
-                if (!success) weakDelay();
             }
-            assertEquals(success, true, "success weakCompareAndSet float");
+            assertEquals(success, true, "weakCompareAndSet float");
             float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 1.0f, "success weakCompareAndSet float");
-        }
-
-        {
-            boolean success = UNSAFE.weakCompareAndSetFloat(base, offset, 2.0f, 3.0f);
-            assertEquals(success, false, "failing weakCompareAndSet float");
-            float x = UNSAFE.getFloat(base, offset);
-            assertEquals(x, 1.0f, "failing weakCompareAndSet float value");
+            assertEquals(x, 1.0f, "weakCompareAndSet float");
         }
 
         UNSAFE.putFloat(base, offset, 2.0f);

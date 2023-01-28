@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -38,6 +38,7 @@
 
 package compiler.jsr292;
 
+import jdk.internal.misc.Unsafe;
 import jdk.internal.org.objectweb.asm.ClassWriter;
 import jdk.internal.org.objectweb.asm.Handle;
 import jdk.internal.org.objectweb.asm.MethodVisitor;
@@ -46,7 +47,6 @@ import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandleHelper;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodHandles.Lookup;
 import java.lang.invoke.MethodType;
 import java.lang.invoke.MutableCallSite;
 import java.lang.ref.PhantomReference;
@@ -61,6 +61,7 @@ import static jdk.internal.org.objectweb.asm.Opcodes.H_INVOKESTATIC;
 import static jdk.internal.org.objectweb.asm.Opcodes.IRETURN;
 
 public class CallSiteDepContextTest {
+    static final Unsafe               UNSAFE = Unsafe.getUnsafe();
     static final MethodHandles.Lookup LOOKUP = MethodHandleHelper.IMPL_LOOKUP;
     static final String           CLASS_NAME = "compiler/jsr292/Test";
     static final String          METHOD_NAME = "m";
@@ -129,9 +130,8 @@ public class CallSiteDepContextTest {
     }
 
     public static void testSharedCallSite() throws Throwable {
-        Lookup lookup = MethodHandles.lookup();
-        Class<?> cls1 = lookup.defineHiddenClass(getClassFile("CS_1"), true).lookupClass();
-        Class<?> cls2 = lookup.defineHiddenClass(getClassFile("CS_2"), true).lookupClass();
+        Class<?> cls1 = UNSAFE.defineAnonymousClass(CallSiteDepContextTest.class, getClassFile("CS_1"), null);
+        Class<?> cls2 = UNSAFE.defineAnonymousClass(CallSiteDepContextTest.class, getClassFile("CS_2"), null);
 
         MethodHandle[] mhs = new MethodHandle[] {
                 LOOKUP.findStatic(cls1, METHOD_NAME, TYPE),
@@ -152,8 +152,7 @@ public class CallSiteDepContextTest {
         execute(1, mh);
 
         // mcs.context == cls1
-        Lookup lookup = MethodHandles.lookup();
-        Class<?> cls1 = lookup.defineHiddenClass(getClassFile("NonBound_1"), true).lookupClass();
+        Class<?> cls1 = UNSAFE.defineAnonymousClass(CallSiteDepContextTest.class, getClassFile("NonBound_1"), null);
         MethodHandle mh1 = LOOKUP.findStatic(cls1, METHOD_NAME, TYPE);
 
         execute(1, mh1);
@@ -171,10 +170,9 @@ public class CallSiteDepContextTest {
 
         mcs = new MutableCallSite(LOOKUP.findStatic(T.class, "f1", TYPE));
 
-        Lookup lookup = MethodHandles.lookup();
         Class<?>[] cls = new Class[] {
-            lookup.defineHiddenClass(getClassFile("GC_1"), true).lookupClass(),
-            lookup.defineHiddenClass(getClassFile("GC_2"), true).lookupClass(),
+                UNSAFE.defineAnonymousClass(CallSiteDepContextTest.class, getClassFile("GC_1" + id), null),
+                UNSAFE.defineAnonymousClass(CallSiteDepContextTest.class, getClassFile("GC_2" + id), null),
         };
 
         MethodHandle[] mhs = new MethodHandle[] {
@@ -188,7 +186,7 @@ public class CallSiteDepContextTest {
         execute(1, mhs);
 
         ref = new PhantomReference<>(cls[0], rq);
-        cls[0] = lookup.defineHiddenClass(getClassFile("GC_3"), true).lookupClass();
+        cls[0] = UNSAFE.defineAnonymousClass(CallSiteDepContextTest.class, getClassFile("GC_3" + id), null);
         mhs[0] = LOOKUP.findStatic(cls[0], METHOD_NAME, TYPE);
 
         do {

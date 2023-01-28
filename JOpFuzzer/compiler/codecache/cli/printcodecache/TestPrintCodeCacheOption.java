@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -31,14 +31,14 @@
  *          java.management
  *          jdk.internal.jvmstat/sun.jvmstat.monitor
  *
- * @run driver/timeout=240 compiler.codecache.cli.printcodecache.TestPrintCodeCacheOption
+ * @run main/timeout=240 compiler.codecache.cli.printcodecache.TestPrintCodeCacheOption
  */
 
 package compiler.codecache.cli.printcodecache;
 
 import compiler.codecache.cli.common.CodeCacheCLITestBase;
 import compiler.codecache.cli.common.CodeCacheCLITestCase;
-import jdk.test.whitebox.code.BlobType;
+import sun.hotspot.code.BlobType;
 
 import java.util.EnumSet;
 

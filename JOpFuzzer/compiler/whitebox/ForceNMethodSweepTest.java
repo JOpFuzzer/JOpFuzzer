@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,11 +28,9 @@
  * @library /test/lib /
  * @modules java.base/jdk.internal.misc
  *          java.management
- *
- * @requires vm.opt.DeoptimizeALot != true
- *
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm -Xbootclasspath/a:. -XX:+UnlockDiagnosticVMOptions
  *                   -XX:-TieredCompilation -XX:+WhiteBoxAPI
  *                   -XX:CompileCommand=compileonly,compiler.whitebox.SimpleTestCaseHelper::*
@@ -44,7 +42,7 @@
 package compiler.whitebox;
 
 import jdk.test.lib.Asserts;
-import jdk.test.whitebox.code.BlobType;
+import sun.hotspot.code.BlobType;
 
 import java.util.EnumSet;
 
@@ -69,7 +67,7 @@ public class ForceNMethodSweepTest extends CompilerWhiteBoxTest {
         Asserts.assertLT(-1, 0, "message");
 
         checkNotCompiled();
-        WHITE_BOX.fullGC();
+        guaranteedSweep();
         int usage = getTotalUsage();
 
         compile();
@@ -78,13 +76,13 @@ public class ForceNMethodSweepTest extends CompilerWhiteBoxTest {
         Asserts.assertGT(afterCompilation, usage,
                 "compilation should increase usage");
 
-        WHITE_BOX.fullGC();
+        guaranteedSweep();
         int afterSweep = getTotalUsage();
         Asserts.assertLTE(afterSweep, afterCompilation,
                 "sweep shouldn't increase usage");
 
         deoptimize();
-        WHITE_BOX.fullGC();
+        guaranteedSweep();
         int afterDeoptAndSweep = getTotalUsage();
         Asserts.assertLT(afterDeoptAndSweep, afterSweep,
                 "sweep after deoptimization should decrease usage");
@@ -96,5 +94,12 @@ public class ForceNMethodSweepTest extends CompilerWhiteBoxTest {
            usage += type.getMemoryPool().getUsage().getUsed();
         }
         return usage;
+    }
+    private void guaranteedSweep() {
+        // not entrant -> ++stack_traversal_mark -> zombie -> flushed
+        for (int i = 0; i < 5; ++i) {
+            WHITE_BOX.fullGC();
+            WHITE_BOX.forceNMethodSweep();
+        }
     }
 }

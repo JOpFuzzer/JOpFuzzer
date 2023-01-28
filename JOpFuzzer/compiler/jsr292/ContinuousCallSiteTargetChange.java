@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016, 2020, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,11 +24,11 @@
 /**
  * @test
  * @library /test/lib /
- * @requires vm.flagless
  *
- * @build jdk.test.whitebox.WhiteBox
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
- * @run driver compiler.jsr292.ContinuousCallSiteTargetChange
+ * @build sun.hotspot.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
+ * @run driver/timeout=300 compiler.jsr292.ContinuousCallSiteTargetChange
  */
 
 package compiler.jsr292;
@@ -36,7 +36,7 @@ package compiler.jsr292;
 import jdk.test.lib.Asserts;
 import jdk.test.lib.process.OutputAnalyzer;
 import jdk.test.lib.process.ProcessTools;
-import jdk.test.whitebox.WhiteBox;
+import sun.hotspot.WhiteBox;
 
 import java.lang.invoke.CallSite;
 import java.lang.invoke.MethodHandle;
@@ -61,7 +61,8 @@ public class ContinuousCallSiteTargetChange {
         argsList.add(test.getName());
         argsList.add(Integer.toString(ITERATIONS));
 
-        ProcessBuilder pb = ProcessTools.createJavaProcessBuilder(argsList);
+        ProcessBuilder pb = ProcessTools.createJavaProcessBuilder(
+                argsList.toArray(new String[argsList.size()]));
 
         OutputAnalyzer analyzer = new OutputAnalyzer(pb.start());
 
@@ -171,7 +172,7 @@ public class ContinuousCallSiteTargetChange {
             WhiteBox whiteBox = WhiteBox.getWhiteBox();
             for (int i = 0; i < iterations; i++) {
                 iteration();
-                whiteBox.fullGC();
+                whiteBox.forceNMethodSweep();
             }
         }
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014, 2018, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -23,18 +23,17 @@
 
 /**
  * @test LevelTransitionTest
- * @requires vm.compMode != "Xcomp"
  * @summary Test the correctness of compilation level transitions for different methods
  * @library /test/lib /
  * @modules java.base/jdk.internal.misc
  *          java.management
  *
- * @build jdk.test.whitebox.WhiteBox
+ * @build sun.hotspot.WhiteBox
  *        compiler.tiered.LevelTransitionTest
- * @run driver jdk.test.lib.helpers.ClassFileInstaller jdk.test.whitebox.WhiteBox
+ * @run driver ClassFileInstaller sun.hotspot.WhiteBox
+ *                                sun.hotspot.WhiteBox$WhiteBoxPermission
  * @run main/othervm/timeout=240 -Xmixed -Xbootclasspath/a:. -XX:+UnlockDiagnosticVMOptions
  *                   -XX:+WhiteBoxAPI -XX:+TieredCompilation -XX:-UseCounterDecay
- *                   -XX:-BackgroundCompilation
  *                   -XX:CompileCommand=compileonly,compiler.whitebox.SimpleTestCaseHelper::*
  *                   -XX:CompileCommand=compileonly,compiler.tiered.LevelTransitionTest$ExtendedTestCase$CompileMethodHolder::*
  *                   compiler.tiered.LevelTransitionTest
@@ -44,11 +43,11 @@ package compiler.tiered;
 
 import compiler.whitebox.CompilerWhiteBoxTest;
 import compiler.whitebox.SimpleTestCase;
-import jdk.test.lib.Platform;
 import jtreg.SkippedException;
 
 import java.lang.reflect.Executable;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import java.util.concurrent.Callable;
 
 public class LevelTransitionTest extends TieredLevelsTest {
@@ -100,7 +99,6 @@ public class LevelTransitionTest extends TieredLevelsTest {
             int newLevel;
             int current = getCompLevel();
             int expected = getNextLevel(current);
-            System.out.println("Levels, current: " + current + ", expected: " + expected);
             if (current == expected) {
                 // if we are on expected level, just execute it more
                 // to ensure that the level won't change
@@ -110,10 +108,9 @@ public class LevelTransitionTest extends TieredLevelsTest {
                 finish = true;
             } else {
                 newLevel = changeCompLevel();
-                System.out.printf("Method %s has been compiled to level %d. Expected level is %d%n",
-                        method, newLevel, expected);
                 finish = false;
             }
+            System.out.printf("Method %s is compiled on level %d. Expected level is %d%n", method, newLevel, expected);
             checkLevel(expected, newLevel);
             printInfo();
         }
@@ -130,9 +127,8 @@ public class LevelTransitionTest extends TieredLevelsTest {
         int nextLevel = currentLevel;
         switch (currentLevel) {
             case CompilerWhiteBoxTest.COMP_LEVEL_NONE:
-                nextLevel = isTrivial() ? CompilerWhiteBoxTest.COMP_LEVEL_SIMPLE :
-                            isMethodProfiled ? CompilerWhiteBoxTest.COMP_LEVEL_FULL_OPTIMIZATION :
-                            CompilerWhiteBoxTest.COMP_LEVEL_FULL_PROFILE;
+                nextLevel = isMethodProfiled ? CompilerWhiteBoxTest.COMP_LEVEL_FULL_OPTIMIZATION
+                        : CompilerWhiteBoxTest.COMP_LEVEL_FULL_PROFILE;
                 break;
             case CompilerWhiteBoxTest.COMP_LEVEL_LIMITED_PROFILE:
             case CompilerWhiteBoxTest.COMP_LEVEL_FULL_PROFILE:
@@ -153,7 +149,7 @@ public class LevelTransitionTest extends TieredLevelsTest {
         return testCase == ExtendedTestCase.ACCESSOR_TEST
                 || testCase == SimpleTestCase.METHOD_TEST
                 || testCase == SimpleTestCase.STATIC_TEST
-                || testCase == ExtendedTestCase.TRIVIAL_CODE_TEST;
+                || (testCase == ExtendedTestCase.TRIVIAL_CODE_TEST && isMethodProfiled);
     }
 
     /**
@@ -173,6 +169,42 @@ public class LevelTransitionTest extends TieredLevelsTest {
             }
         }
         return newLevel;
+    }
+
+    protected static class Helper {
+        /**
+         * Gets method from a specified class using its name
+         *
+         * @param aClass type method belongs to
+         * @param name   the name of the method
+         * @return {@link Method} that represents corresponding class method
+         */
+        public static Method getMethod(Class<?> aClass, String name) {
+            Method method;
+            try {
+                method = aClass.getDeclaredMethod(name);
+            } catch (NoSuchMethodException e) {
+                throw new Error("TESTBUG: Unable to get method " + name, e);
+            }
+            return method;
+        }
+
+        /**
+         * Gets {@link Callable} that invokes given method from the given object
+         *
+         * @param object the object the specified method is invoked from
+         * @param name   the name of the method
+         */
+        public static Callable<Integer> getCallable(Object object, String name) {
+            Method method = getMethod(object.getClass(), name);
+            return () -> {
+                try {
+                    return Objects.hashCode(method.invoke(object));
+                } catch (ReflectiveOperationException e) {
+                    throw new Error("TESTBUG: Invocation failure", e);
+                }
+            };
+        }
     }
 
     private static enum ExtendedTestCase implements CompilerWhiteBoxTest.TestCase {
@@ -199,8 +231,8 @@ public class LevelTransitionTest extends TieredLevelsTest {
         }
 
         private ExtendedTestCase(String methodName) {
-            this.executable = MethodHelper.getMethod(CompileMethodHolder.class, methodName);
-            this.callable = MethodHelper.getCallable(new CompileMethodHolder(), methodName);
+            this.executable = LevelTransitionTest.Helper.getMethod(CompileMethodHolder.class, methodName);
+            this.callable = LevelTransitionTest.Helper.getCallable(new CompileMethodHolder(), methodName);
         }
 
         private static class CompileMethodHolder {
@@ -226,10 +258,12 @@ public class LevelTransitionTest extends TieredLevelsTest {
             }
 
             /**
-             * Method considered as trivial by type (constant getter)
+             * Method considered as trivial by amount of code
              */
             public int trivialCode() {
-                return 0x42;
+                int var = 0xBAAD_C0DE;
+                var *= field;
+                return var;
             }
         }
     }

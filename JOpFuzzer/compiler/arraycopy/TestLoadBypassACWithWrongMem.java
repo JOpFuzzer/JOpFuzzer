@@ -23,7 +23,6 @@
 
 /**
  * @test
- * @key stress randomness
  * @bug 8181742
  * @summary Loads that bypass arraycopy ends up with wrong memory state
  *

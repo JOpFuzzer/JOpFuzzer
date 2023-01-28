@@ -11,7 +11,6 @@
 
 /**
  * @test
- * @key randomness
  * @bug 8005956
  * @summary C2: assert(!def_outside->member(r)) failed: Use of external LRG overlaps the same LRG defined in this block
  * @library /test/lib

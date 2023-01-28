@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015, 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015, 2016, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -28,11 +28,8 @@ import compiler.testlibrary.CompilerUtils;
 import jdk.test.lib.util.Pair;
 import jdk.test.lib.Utils;
 import jdk.vm.ci.code.InstalledCode;
-import jdk.vm.ci.meta.MetaAccessProvider;
-import jdk.vm.ci.meta.ResolvedJavaMethod;
-import jdk.vm.ci.runtime.JVMCI;
-import jdk.test.whitebox.WhiteBox;
-import jdk.test.whitebox.code.NMethod;
+import sun.hotspot.WhiteBox;
+import sun.hotspot.code.NMethod;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Executable;
@@ -150,12 +147,11 @@ public class CompileCodeTestCase {
     }
 
     public InstalledCode toInstalledCode() {
-        MetaAccessProvider metaAccess = JVMCI.getRuntime().getHostJVMCIBackend().getMetaAccess();
-        ResolvedJavaMethod resolvedJavaMethod = metaAccess.lookupJavaMethod(executable);
         NMethod nmethod = toNMethod();
         long address = nmethod == null ? 0L : nmethod.address;
         long entryPoint = nmethod == null ? 0L : nmethod.entry_point;
-        return CTVMUtilities.getInstalledCode(resolvedJavaMethod, executable.getName(), address, entryPoint);
+        return CTVMUtilities.getInstalledCode(
+                executable.getName(), address, entryPoint);
     }
 
     @Override
@@ -244,7 +240,7 @@ public class CompileCodeTestCase {
     }
 
     static {
-        Map<Class<?>, Object> map = new HashMap<>();
+        Map<Class<?>, Object> map = new HashMap<>();;
         map.put(CompileCodeTestCase.DummyEx.class,
                 new CompileCodeTestCase.DummyEx());
         map.put(CompileCodeTestCase.Dummy.class,

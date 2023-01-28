@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, 2021, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,7 +26,8 @@
  * @bug 8190797
  * @summary Test OSR compilation with bad operand stack.
  * @library /test/lib /
- * @requires vm.flagless
+ * @modules java.base/jdk.internal.misc
+ *          java.management
  * @compile OSRWithBadOperandStack.jasm
  * @run driver compiler.linkage.TestLinkageErrorInGenerateOopMap
  */
@@ -41,16 +42,12 @@ public class TestLinkageErrorInGenerateOopMap {
     public static void main(String args[]) throws Exception {
         if (args.length == 0) {
             // Spawn new VM instance to execute test
-            ProcessBuilder pb = ProcessTools.createJavaProcessBuilder(
-                    "-XX:+UnlockDiagnosticVMOptions",
-                    "-XX:-BytecodeVerificationRemote",
-                    "-XX:-BytecodeVerificationLocal",
-                    "-XX:-TieredCompilation",
-                    "-XX:CompileCommand=dontinline,compiler/linkage/OSRWithBadOperandStack.m*",
-                    "-XX:-CreateCoredumpOnCrash",
-                    "-Xmx64m",
-                    TestLinkageErrorInGenerateOopMap.class.getName(),
-                    "run");
+            String[] flags = {"-noverify", "-XX:-TieredCompilation",
+                              "-XX:CompileCommand=dontinline,compiler/linkage/OSRWithBadOperandStack.m*",
+                              "-XX:-CreateCoredumpOnCrash",
+                              "-Xmx64m",
+                              "compiler.linkage.TestLinkageErrorInGenerateOopMap", "run"};
+            ProcessBuilder pb = ProcessTools.createJavaProcessBuilder(flags);
             OutputAnalyzer out = new OutputAnalyzer(pb.start());
             if (out.getExitValue() != 0) {
                 // OSR compilation should exit with an error during OopMap verification
