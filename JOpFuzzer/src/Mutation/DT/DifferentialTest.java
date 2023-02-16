@@ -35,9 +35,8 @@ public class DifferentialTest {
     HashMap<String, String> optionProfiles = new HashMap<>();
     File test;
     String bugCmd;
-    float threshold = 0f;// threshold for the relation between structure and option
+    float threshold;// threshold for the relation between structure and option
     int selectOptionNumber = 3;// number of options to be selected
-    float selectOptionProbability = 0.6f;// probability of selecting an option
 
     public DifferentialTest(String jdkPath, File test, List<String> originOptions, List<String> changedStructure) throws IOException, ExecutionException, InterruptedException {
         this.jdkPath = jdkPath;
@@ -80,8 +79,8 @@ public class DifferentialTest {
         for (Map.Entry<String, String> p : optionProfiles.entrySet()) {
             profile = " -XX:+" + p.getValue() + " ";
             option = getOptionNon_defaultValue(p.getKey());
-            cmd = jdkPath + "/bin/java -cp -Xbatch -XX:+IgnoreUnrecognizedVMOptions " + test.getCanonicalPath() + " " + profile + " Test " + " > " + test.getCanonicalPath() + "/default.log";
-            String cmdProfile = jdkPath + "/bin/java -cp -Xbatch -XX:+IgnoreUnrecognizedVMOptions " + test.getCanonicalPath() + " " + profile + " " + option + " Test " + " > " + test.getCanonicalPath() + "/profile.log";
+            cmd = jdkPath + "/bin/java -cp -Xbatch -XX:+IgnoreUnrecognizedVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions " + test.getCanonicalPath() + " " + profile + " Test " + " > " + test.getCanonicalPath() + "/default.log";
+            String cmdProfile = jdkPath + "/bin/java -cp -Xbatch -XX:+IgnoreUnrecognizedVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions " + test.getCanonicalPath() + " " + profile + " " + option + " Test " + " > " + test.getCanonicalPath() + "/profile.log";
             int exitValue = execute(cmd);
             int exitValueProfile = execute(cmdProfile);
             if (exitValue != 0 || exitValueProfile != 0) {
@@ -169,7 +168,7 @@ public class DifferentialTest {
         int testNumber = (int) Math.pow(2, optionSet.size());
         ExecutorService threadPool = Executors.newFixedThreadPool(testNumber);
         for (int i = 0; i < testNumber; i++) {
-            cmd = "timeout 30s " + jdkPath + "/bin/java -cp -Xbatch -XX:+IgnoreUnrecognizedVMOptions " + test.getCanonicalPath() + " " + solveStringSet(optionSet, i) + " Test > " + test.getCanonicalPath() + "/" + i + ".log";
+            cmd = "timeout 30s " + jdkPath + "/bin/java -cp -Xbatch -XX:+IgnoreUnrecognizedVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions " + test.getCanonicalPath() + " " + solveStringSet(optionSet, i) + " Test > " + test.getCanonicalPath() + "/" + i + ".log";
             Future<Integer> result = threadPool.submit(new Task(cmd));
             if (result.get() != 0) {
                 System.err.println("Option Error:" + cmd + " failed");

@@ -50,8 +50,8 @@ public class RelationMapping {
                 String profile = "-XX:+" + p.toString();
                 for (Tuple3<String, List<Integer>, Boolean> tuple : p.getOptionAndValue()) {
                     String option = makeOption(tuple, p);
-                    String methodOn = "timeout 30s " + jdkPath + "/bin/java -Xbatch -XX:+IgnoreUnrecognizedVMOptions " + classPath + " " + profile + option + " " + seedName + " > " + seedPath + tuple._1 + "_" + methodName + "_on";
-                    String methodOff = "timeout 30s " + jdkPath + "/bin/java -Xbatch -XX:+IgnoreUnrecognizedVMOptions " + classPath + " " + profile + option + " " + excludeMethod + " " + seedName + " > " + seedPath + tuple._1 + "_" + methodName + "_off";
+                    String methodOn = "timeout 30s " + jdkPath + "/bin/java -Xbatch -XX:+IgnoreUnrecognizedVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions " + classPath + " " + profile + option + " " + seedName + " > " + seedPath + tuple._1 + "_" + methodName + "_on";
+                    String methodOff = "timeout 30s " + jdkPath + "/bin/java -Xbatch -XX:+IgnoreUnrecognizedVMOptions -XX:+UnlockDiagnosticVMOptions -XX:+UnlockExperimentalVMOptions " + classPath + " " + profile + option + " " + excludeMethod + " " + seedName + " > " + seedPath + tuple._1 + "_" + methodName + "_off";
                     es.execute(new Task(tuple, enc, methodOn, methodOff, optionIndex, StructureOptionRelation, StructureOptionRelationTime, seedPath));
                     optionIndex++;
                 }
